@@ -1,2 +1,2 @@
 # chaos
-"Single-command setup for LaTeX writing environment"
+Single-command setup for LaTeX writing environment
