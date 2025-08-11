@@ -18,17 +18,24 @@ source "$HOME/.Share_Fun/Share_Fun_Install.sh"
 # 保存脚本变量
 CH_ARGS=( "$0" "$@" )
 # 变量配置
-CH_VERSION="${CH_ARGS[0]##*/}-V1.2"
+CH_VERSION="${CH_ARGS[0]##*/}-V1.3"
 CH_SOURCE="$HOME/.chaos"
 CH_CFG="$CH_SOURCE/info.sh"
 CH_PATH="$PWD"
+# 建立模板源
+if [[ ! ${CH_ARGS[0]} == ${CH_ARGS[0]%.sh} ]]; then
+    if [ ! -e $CH_SOURCE ]; then
+        cp -r ./CH-TEMP $CH_SOURCE
+    else
+        echo -n "${CH_SOURCE}已经存在，是否覆盖安装？y/n : "; read CH_YN
+        if [[ $CH_YN == "y" || $CH_YN == "Y" ]]; then
+            rm -rf $CH_SOURCE
+            cp -r ./CH-TEMP $CH_SOURCE
+        fi
+    fi
+fi
 # 检测是否已经安装
 SFI_INSTALL ${CH_ARGS[1]} ${CH_ARGS[0]} $CH_VERSION
-# 建立模板源
-if [ ! -e $CH_SOURCE ]; then
-    mkdir $CH_SOURCE
-    cp -r ./CH-TEMP/* $CH_SOURCE
-fi
 if [ ! -e $CH_CFG ]; then
    touch $CH_CFG
    chmod +w $CH_CFG
@@ -73,37 +80,63 @@ CH_ADD_INFO(){
     clear
     echo "${2%/*} 创建成功! "
 }
-# 列出模板
-NEO_LIST "${CH_FILES[*]}" 1
-# 建立文件目录
-if [[ ! -e ${CH_ARGS[1]} ]]; then
-    cp -r "$CH_SOURCE/$EDFILE" "${CH_PATH}/${CH_ARGS[1]}"
+CH_CURRENT=$(ls ${CH_PATH})
+if [[ ${CH_CURRENT[@]} =~ "main" || ${CH_CURRENT[@]} =~ "chapters" ]]; then
+    CH_CHAPATH="${CH_PATH}/chapters/${CH_ARGS[1]}"
+    if [[ ! -e  ${CH_CHAPATH} ]]; then
+        mkdir "${CH_CHAPATH}"
+        touch "${CH_CHAPATH}/${CH_ARGS[1]}.tex"
+        CH_CHAMAIN=$(ls ${CH_PATH}/main/*.tex)
+        echo "\documentclass[../../main/${CH_CHAMAIN#*main/}]{subfiles}" \
+            > "${CH_CHAPATH}/${CH_ARGS[1]}.tex"
+        echo "\begin{document}" \
+            >> "${CH_CHAPATH}/${CH_ARGS[1]}.tex"
+        echo "<++>" \
+            >> "${CH_CHAPATH}/${CH_ARGS[1]}.tex"
+        echo "\end{document}" \
+            >> "${CH_CHAPATH}/${CH_ARGS[1]}.tex"
+        sed -i "/\%----chapters----/a \\\\\subfile{..\/chapters\/${CH_ARGS[1]}\/${CH_ARGS[1]}.tex}" ./main/${CH_CHAMAIN#*main/}
+    else
+        echo "目录${CH_ARGS[1]}已经存在, 请重新命名！！"
+        exit
+    fi
+else
+    # 列出模板
+    NEO_LIST "${CH_FILES[*]}" 1
+    # 建立文件目录
+    if [[ ! -e ${CH_ARGS[1]} ]]; then
+        cp -r "$CH_SOURCE/$EDFILE" "${CH_PATH}/${CH_ARGS[1]}"
+        cp "$CH_SOURCE/pkgset.tex" "${CH_PATH}/${CH_ARGS[1]}/pkgset.tex"
+    else
+        echo "目录${CH_ARGS[1]}已经存在, 请重新命名！！"
+        exit
+    fi
+    # 分类处理文档
+    case ${EDFILE} in
+        "article")
+            CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/${CH_ARGS[1]}.tex"
+            mv "${CH_PATH}/${CH_ARGS[1]}/article.tex" "${CH_TARGET}"
+            CH_ADD_INFO "en" "${CH_TARGET}"
+            ;;
+        "ctexart")
+            CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/${CH_ARGS[1]}.tex"
+            mv "${CH_PATH}/${CH_ARGS[1]}/article.tex" "${CH_TARGET}"
+            CH_ADD_INFO "zh" "${CH_TARGET}"
+            ;;
+        "ctexbeamer")
+            CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/${CH_ARGS[1]}.tex"
+            mv "${CH_PATH}/${CH_ARGS[1]}/beamer.tex" "${CH_TARGET}"
+            CH_ADD_INFO "zh" "${CH_TARGET}"
+            ;;
+        "ctexbook")
+            CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/main/${CH_ARGS[1]}.tex"
+            mv "${CH_PATH}/${CH_ARGS[1]}/main/book.tex" "${CH_TARGET}"
+            CH_ADD_INFO "zh" "${CH_TARGET}"
+            ;;
+        *)
+            clear
+            rm -rf "${CH_PATH}/${CH_ARGS[1]}"
+            echo "尚未完成${EDFILE}模板建设，敬请期待！"
+            ;;
+    esac
 fi
-# 分类处理文档
-case ${EDFILE} in
-    "article")
-        CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/${CH_ARGS[1]}.tex"
-        mv "${CH_PATH}/${CH_ARGS[1]}/article.tex" "${CH_TARGET}"
-        CH_ADD_INFO "en" "${CH_TARGET}"
-        ;;
-    "ctexart")
-        CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/${CH_ARGS[1]}.tex"
-        mv "${CH_PATH}/${CH_ARGS[1]}/article.tex" "${CH_TARGET}"
-        CH_ADD_INFO "zh" "${CH_TARGET}"
-        ;;
-    "ctexbeamer")
-        CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/${CH_ARGS[1]}.tex"
-        mv "${CH_PATH}/${CH_ARGS[1]}/beamer.tex" "${CH_TARGET}"
-        CH_ADD_INFO "zh" "${CH_TARGET}"
-        ;;
-    "ctexbook")
-        CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/main/${CH_ARGS[1]}.tex"
-        mv "${CH_PATH}/${CH_ARGS[1]}/main/book.tex" "${CH_TARGET}"
-        CH_ADD_INFO "zh" "${CH_TARGET}"
-        ;;
-    *)
-        clear
-        rm -rf "${CH_PATH}/${CH_ARGS[1]}"
-        echo "尚未完成${EDFILE}模板建设，敬请期待！"
-        ;;
-esac
