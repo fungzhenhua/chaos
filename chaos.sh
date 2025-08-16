@@ -11,14 +11,27 @@
 # 注解：本程序之所以用chaos命名，因为在研究生毕业时，某博士导师当众纠正我的发音“Kei-阿丝”为"超丝“，这个纠正是极其错误的，为纪念这一事件，程序命名为chaos.
 #
 # 调入私有函数库
-source "$HOME/.Share_Fun/Share_Fun_Menu.sh"
-source "$HOME/.Share_Fun/Share_Fun_KeySudo.sh"
-source "$HOME/.Share_Fun/Share_Fun_Weather.sh"
-source "$HOME/.Share_Fun/Share_Fun_Install.sh"
+SHARE_FUNS=( Share_Fun_Menu.sh Share_Fun_KeySudo.sh Share_Fun_Install.sh Share_Fun_Weather.sh )
+SHARE_PWD="$HOME/.Share_Fun"
+SHARE_LOSS=0
+for SHARE_FUN in ${SHARE_FUNS[@]}; do
+    if [[ ! -e "$SHARE_PWD/$SHARE_FUN" ]]; then
+        SHARE_LOSS=1
+    fi
+done
+if [[ $SHARE_LOSS == 1 ]]; then
+    if [[ -e  $SHARE_PWD ]]; then
+        rm -rf  $SHARE_PWD
+    fi
+    git clone git@fung:fungzhenhua/Share_Fun $SHARE_PWD
+fi
+for SHARE_FUN in ${SHARE_FUNS[@]}; do
+    source "$SHARE_PWD/$SHARE_FUN"
+done
 # 保存脚本变量
 CH_ARGS=( "$0" "$@" )
 # 变量配置
-CH_VERSION="${CH_ARGS[0]##*/}-V1.3"
+CH_VERSION="${CH_ARGS[0]##*/}-V1.4"
 CH_SOURCE="$HOME/.chaos"
 CH_CFG="$CH_SOURCE/info.sh"
 CH_PATH="$PWD"
