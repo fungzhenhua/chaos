@@ -3,7 +3,7 @@
 # Program  : chaos.sh
 # Author   : fengzhenhua
 # Email    : fengzhenhua@outlook.com
-# Date     : 2025-08-03 11:57
+# Date     : 2025-10-16 15:18
 # CopyRight: Copyright (C) 2022-2030 Zhen-Hua Feng(冯振华)
 # License  : Distributed under terms of the MIT license.
 # 功能：一键创建结构化 LaTeX 项目，智能管理章节与资源
@@ -31,7 +31,7 @@ done
 # 保存脚本变量
 CH_ARGS=( "$0" "$@" )
 # 变量配置
-CH_VERSION="${CH_ARGS[0]##*/}-V1.4"
+CH_VERSION="${CH_ARGS[0]##*/}-V1.5"
 CH_SOURCE="$HOME/.chaos"
 CH_CFG="$CH_SOURCE/info.sh"
 CH_PATH="$PWD"
@@ -97,7 +97,7 @@ CH_CURRENT=$(ls ${CH_PATH})
 if [[ ${CH_CURRENT[@]} =~ "main" || ${CH_CURRENT[@]} =~ "chapters" ]]; then
     CH_CHAPATH="${CH_PATH}/chapters/${CH_ARGS[1]}"
     if [[ ! -e  ${CH_CHAPATH} ]]; then
-        mkdir "${CH_CHAPATH}"
+        mkdir -p "${CH_CHAPATH}"
         touch "${CH_CHAPATH}/${CH_ARGS[1]}.tex"
         CH_CHAMAIN=$(ls ${CH_PATH}/main/*.tex)
         echo "\documentclass[../../main/${CH_CHAMAIN#*main/}]{subfiles}" \
