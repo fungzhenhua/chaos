@@ -8,7 +8,8 @@
 % \geometry{paperwidth=61.75cm, paperheight=33.6cm}
 \usefonttheme[onlymath]{serif}
 % \usepackage{newtxmath} % 设置数学字体为 Times 风格
-\usetheme{Madrid}
+% \usetheme{Madrid}
+\usetheme{EastLansing}
 %%
 \title{<+title+>}
 % \subtitle{北京师范大学强场组组会汇报}
@@ -25,6 +26,14 @@
 }
 \date{<+date+>}
 % \logo{\includegraphics[width=.12\linewidth]{./logo/bnulogo.jpg}} %所有页面显示logo
+\setbeamertemplate{frametitle}
+{
+    \begin{beamercolorbox}[wd=\paperwidth]{frametitle}
+        \strut\hspace{0.5em}\insertframetitle\strut
+        \hfill
+        \raisebox{-2mm}{\includegraphics[width=0.8cm]{./logo/zibo.png}}
+    \end{beamercolorbox}
+}
 \makeatletter
 \titlegraphic{
     \hspace*{-\beamer@leftmargin}%
