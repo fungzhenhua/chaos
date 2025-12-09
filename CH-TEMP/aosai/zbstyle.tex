@@ -1,0 +1,193 @@
+\usepackage{fancyhdr}
+\usepackage{lipsum}
+\usepackage{lastpage}
+\usepackage{atbegshi}
+\usepackage{zref-savepos}
+\usepackage{dashrule}
+
+% 定义计数器
+\newcounter{fpage}
+\newcounter{spage}
+\newcounter{fspage}
+\newcounter{fspages}
+
+% 定义试题、答案、答题纸的页码
+\newcounter{shitipage}
+\newcounter{daanpage}
+\newcounter{datizhipage}
+
+% 重置页码
+\newcommand{\resetpage}{
+    \setcounter{fpage}{1}
+    \setcounter{spage}{2}
+}
+\resetpage
+
+% 设置布尔值，判断是否加载答案和答题纸
+
+\newbool{AnswerReady}
+\newbool{SheetReady}
+
+% 定义页眉
+\newcommand{\school}{\includegraphics[height=\headheight]{./logo/zb.jpg}\, 淄博实验中学}
+\newcommand{\fhtitle}{物理竞赛}
+\newcommand{\fhbumen}{物理竞赛原创讲义}
+\newcommand{\fhmingzhi}{冯振华}
+\newcommand{\fhshenhe}{冯振华}
+\newcommand{\fhqi}{1}
+\newcommand{\fhshijian}{2025年11月13日}
+\renewcommand{\title}[1]{\renewcommand{\fhtitle}{#1}}
+\renewcommand{\date}[1]{\renewcommand{\fhshijian}{#1}}
+\newcommand{\mingzhi}[1]{\renewcommand{\fhmingzhi}{#1}}
+\newcommand{\shenhe}[1]{\renewcommand{\fhshenhe}{#1}}
+\newcommand{\bumen}[1]{\renewcommand{\fhbumen}{#1}}
+\newcommand{\qi}[1]{\renewcommand{\fhqi}{#1}}
+%
+% 定义总面码
+\newcommand{\shititag}{}
+% 定义页脚
+\newcommand{\zbfoot}{
+    \fancyfoot[L]{\parbox[C]{0.5\textwidth}{
+            \ifnum\value{fspage}<\value{fpage}
+                \relax
+            \else
+                \centering{}\shititag\,第\thefpage{}页\,{}共\thefspage{}页
+            \fi
+    }\addtocounter{fpage}{2}}
+    \fancyfoot[R]{\parbox[C]{0.5\textwidth}{
+            \ifnum\value{fspage}<\value{spage}
+                \relax
+            \else
+                \centering{}\shititag\,第\thespage{}页\,{}共\thefspage{}页
+            \fi
+    }\addtocounter{spage}{2}}
+}
+%
+\makeatletter
+% 定义在栏末尾添加标记的命令
+\newcommand{\columnendmark}{%
+    \zsavepos{column-end-\thepage-\if@firstcolumn 1\else 2\fi}%
+    \ifbool{SheetReady}{
+        \setcounter{fspages}{\thespage}
+    }{
+        \if@firstcolumn
+            \setcounter{fspages}{\thefpage}
+        \else
+            \setcounter{fspages}{\thespage}
+        \fi
+    }
+}
+\makeatother
+
+% 定义新的格式
+\fancypagestyle{zbstyle}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \resetpage
+    % \fancyhead[L]{\school{}\fhbumen{}\,第\fhqi{}期}
+    % \fancyhead[R]{命制人：\fhmingzhi\quad{}审核人：\fhshenhe}
+    \fancyhead[L]{\school{}\fhbumen{}\,第\fhqi{}期:\fhtitle}
+    \fancyhead[R]{作者：\fhmingzhi}
+    \zbfoot
+}
+
+\fancypagestyle{zbsheet}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \resetpage
+    \zbfoot
+}
+
+% 自动在每栏末尾添加标记
+\AtEndDocument{%
+    \columnendmark
+    \ifbool{AnswerReady}{
+        \immediate\write\pagefile{\string\setcounter{daanpage}{\thefspages}}
+    }{
+        \ifbool{SheetReady}{
+            \immediate\write\pagefile{\string\setcounter{datizhipage}{\thefspages}}
+        }{
+            \immediate\write\pagefile{\string\setcounter{shitipage}{\thefspages}}
+        }
+    }
+}
+\newwrite{\pagefile}
+\AtBeginDocument{%
+    % 设置试卷主题
+    \pagestyle{zbstyle}
+    % 设置标题和日期
+    \begin{center}
+        {\bf\Large \fhtitle}
+
+        {时间：\fhshijian}
+    \end{center}
+    % 设置答案和答题纸总页码
+    \boolfalse{AnswerReady}
+    \boolfalse{SheetReady}
+    \IfFileExists{./zbpage.aux}{
+        \input{./zbpage.aux}
+        \setcounter{fspage}{\theshitipage}
+    }{
+        \relax
+    }
+    \immediate\openout\pagefile=zbpage.aux
+}
+
+% 定义答题纸
+\newcommand{\info}{
+    \noindent
+    \makebox[0pt][r]{
+        \rotatebox{90}{
+            \makebox[0.90\textheight][c]{
+                姓名：\rule{2cm}{0.4pt}\qquad
+                年级：\rule{2cm}{0.4pt}\qquad
+                班级：\rule{2cm}{0.4pt}\qquad
+                考号：\rule{2cm}{0.4pt}\qquad
+                日期：\rule{2cm}{0.4pt}
+                \hfill
+            }
+        }
+    }
+}
+% 重新定义\vrule
+\let\oldvrule\vrule
+% \renewcommand{\vrule}[2]{}
+\newcommand{\answersheet}[1]{
+    \columnendmark
+    \ifbool{AnswerReady}{
+        \immediate\write\pagefile{\string\setcounter{daanpage}{\thefspages}}
+    }{
+        \immediate\write\pagefile{\string\setcounter{shitipage}{\thefspages}}
+    }
+    \clearpage
+    \setlength{\columnseprule}{0.4pt}
+    \boolfalse{AnswerReady}
+    \booltrue{SheetReady}
+    \pagestyle{zbsheet}
+    \renewcommand{\shititag}{答题纸}
+    \setcounter{fspage}{\thedatizhipage}
+    \section*{\fhtitle{}答题纸}
+    \info
+    \clearpage
+    \info
+    % \setlength{\columnseprule}{0pt}
+}
+
+% 定义答案
+
+\newcommand{\answer}{
+    \columnendmark
+    \ifbool{SheetReady}{
+        \immediate\write\pagefile{\string\setcounter{datizhipage}{\thefspages}}
+    }{
+        \immediate\write\pagefile{\string\setcounter{shitipage}{\thefspages}}
+    }
+    \booltrue{AnswerReady}
+    \boolfalse{SheetReady}
+    \clearpage
+    \pagestyle{zbstyle}
+    \renewcommand{\shititag}{答案}
+    \setcounter{fspage}{\thedaanpage}
+    \newpage
+    \section*{\fhtitle{}参考答案}
+}

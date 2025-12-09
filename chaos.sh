@@ -3,7 +3,7 @@
 # Program  : chaos.sh
 # Author   : fengzhenhua
 # Email    : fengzhenhua@outlook.com
-# Date     : 2025-11-07 09:02
+# Date     : 2025-12-02 10:10
 # CopyRight: Copyright (C) 2022-2030 Zhen-Hua Feng(冯振华)
 # License  : Distributed under terms of the MIT license.
 # 功能：一键创建结构化 LaTeX 项目，智能管理章节与资源
@@ -31,7 +31,7 @@ done
 # 保存脚本变量
 CH_ARGS=( "$0" "$@" )
 # 变量配置
-CH_VERSION="${CH_ARGS[0]##*/}-V1.7"
+CH_VERSION="${CH_ARGS[0]##*/}-V1.8"
 CH_SOURCE="$HOME/.chaos"
 CH_CFG="$HOME/.chaos_info.sh"
 CH_PATH="$PWD"
@@ -149,6 +149,11 @@ else
         "ctexbook")
             CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/main/${CH_ARGS[1]}.tex"
             mv "${CH_PATH}/${CH_ARGS[1]}/main/book.tex" "${CH_TARGET}"
+            CH_ADD_INFO "zh" "${CH_TARGET}"
+            ;;
+        "aosai")
+            CH_TARGET="${CH_PATH}/${CH_ARGS[1]}/${CH_ARGS[1]}.tex"
+            mv "${CH_PATH}/${CH_ARGS[1]}/aosai.tex" "${CH_TARGET}"
             CH_ADD_INFO "zh" "${CH_TARGET}"
             ;;
         *)
