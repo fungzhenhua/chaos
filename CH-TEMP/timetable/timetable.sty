@@ -1,0 +1,63 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{timetable}[2026/3/11 v1.1 快速构建高中课程表]
+% 调入宏包
+\RequirePackage{array}
+\RequirePackage{amsmath}
+\RequirePackage{amsfonts}
+\RequirePackage{amssymb}
+\RequirePackage{makeidx}
+\RequirePackage{graphicx}
+\RequirePackage{colortbl}
+\RequirePackage{xcolor}
+\RequirePackage{diagbox}
+\RequirePackage{multirow}
+\RequirePackage[left=2.00cm, right=2.00cm, top=2.00cm, bottom=2.00cm]{geometry}
+% 定义具体命令
+\newcommand{\mysep}{\hspace*{.3em}}
+\newcommand{\setcouse}[3]{
+    \expandafter\def\csname sc#1#2\endcsname{#3}
+}
+\newcommand{\couse}[2]{
+    \ifcsname sc#1#2 \endcsname
+        \quad
+    \else
+        \csname sc#1#2\endcsname
+    \fi
+}
+\newcommand{\timetable}{
+    \centering
+    \begin{tabular}{|c*{9}{|c}|}
+        \hline
+        \multicolumn{10}{|c|}{\fboxrule=0pt \fboxsep=.5em\fbox{\zihao{3}\heiti 课 \mysep 程 \mysep 表}\makebox[0pt][l]{\zihao{6}(教师版)}}\\
+        \hline
+        \multicolumn{2}{|c|}{\diagbox[width=106pt]{时间}{班级}{星期}}&节&\mysep 周 一\mysep &\mysep 周 二\mysep &\mysep 周 三\mysep &\mysep 周 四\mysep &\mysep 周 五\mysep &\mysep 周 六\mysep &\mysep 周 日\mysep \\
+        \hline
+        \multirow{5}*{\parbox{1em}{上\newline\/午}}
+        &07:00-07:50&0&\couse{0}{1}&\couse{0}{2}&\couse{0}{3}&\couse{0}{4}&\couse{0}{5}&\couse{0}{6}&\couse{0}{7} \\
+        \cline{2-10}
+        &08:00-08:40&1&\couse{1}{1}&\couse{1}{2}&\couse{1}{3}&\couse{1}{4}&\couse{1}{5}&\couse{1}{6}&\couse{1}{7} \\
+        \cline{2-10}
+        &08:50-09:30&2&\couse{2}{1}&\couse{2}{2}&\couse{2}{3}&\couse{2}{4}&\couse{2}{5}&\couse{2}{6}&\couse{2}{7} \\
+        \cline{2-10}
+        &10:00-10:40&3&\couse{3}{1}&\couse{3}{2}&\couse{3}{3}&\couse{3}{4}&\couse{3}{5}&\couse{3}{6}&\couse{3}{7} \\
+        \cline{2-10}
+        &10:50-11:30&4&\couse{4}{1}&\couse{4}{2}&\couse{4}{3}&\couse{4}{4}&\couse{4}{5}&\couse{4}{6}&\couse{4}{7} \\
+        \hline
+        \multirow{4}*{\parbox{1em}{下\newline\/午}}
+        &02:00-02:40&5&\couse{5}{1}&\couse{5}{2}&\couse{5}{3}&\couse{5}{4}&\couse{5}{5}&\couse{5}{6}&\couse{5}{7} \\
+        \cline{2-10}
+        &02:50-03:30&6&\couse{6}{1}&\couse{6}{2}&\couse{6}{3}&\couse{6}{4}&\couse{6}{5}&\couse{6}{6}&\couse{6}{7} \\
+        \cline{2-10}
+        &04:00-04:40&7&\couse{7}{1}&\couse{7}{2}&\couse{7}{3}&\couse{7}{4}&\couse{7}{5}&\couse{7}{6}&\couse{7}{7} \\
+        \cline{2-10}    
+        &04:50-05:30&8&\couse{8}{1}&\couse{8}{2}&\couse{8}{3}&\couse{8}{4}&\couse{8}{5}&\couse{8}{6}&\couse{8}{7} \\
+        \hline
+        \multirow{3}*{\parbox{1em}{晚\newline\/自\newline\/习}}
+        &06:40-07:30&9&\couse{9}{1}&\couse{9}{2}&\couse{9}{3}&\couse{9}{4}&\couse{9}{5}&\couse{9}{6}&\couse{9}{7} \\
+        \cline{2-10}
+        &07:40-08:30&10&\couse{10}{1}&\couse{10}{2}&\couse{10}{3}&\couse{10}{4}&\couse{10}{5}&\couse{10}{6}&\couse{10}{7} \\
+        \cline{2-10}
+        &08:40-09:30&11&\couse{11}{1}&\couse{11}{2}&\couse{11}{3}&\couse{11}{4}&\couse{11}{5}&\couse{11}{6}&\couse{11}{7} \\
+        \hline
+    \end{tabular}
+}
