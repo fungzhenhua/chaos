@@ -1,0 +1,93 @@
+% !TeX program = xelatex
+\documentclass[tikz, border=8pt]{standalone}
+\usepackage{ctex}
+\usetikzlibrary{calc}
+\usetikzlibrary{shapes.geometric}
+
+% 印章红（可按需微调）
+\definecolor{sealred}{HTML}{D0021B}
+
+\begin{document}
+% ============================================================
+% 生成一个不规则白色斑点
+% #1 = x 坐标,  #2 = y 坐标,  #3 = 基准半径,  #4 = 顶点数
+% ============================================================
+\newcommand{\randblob}[4]{%
+    \pgfmathsetmacro{\blobang}{360*rnd}%           整体随机旋转
+    \xdef\blobcoords{}%
+    \foreach \k in {1,...,#4} {%
+        \pgfmathsetmacro{\a}{\blobang + 360*\k/#4 + 25*(rnd-0.5)}%  角度扰动
+        \pgfmathsetmacro{\rr}{#3*(0.5 + 0.8*rnd)}%                 半径扰动
+        \pgfmathsetmacro{\vx}{#1 + \rr*cos(\a)}%
+        \pgfmathsetmacro{\vy}{#2 + \rr*sin(\a)}%
+        \xdef\blobcoords{\blobcoords (\vx,\vy)}%
+    }%
+    \fill[white] plot[smooth cycle, tension=0.7] coordinates {\blobcoords};%
+}
+% 生成印章主体
+\begin{tikzpicture}
+
+  % ============ 参数区（改这里就行） ============
+  \def\Rout{2.60}    % 外圈半径
+  \def\Rin{2.42}     % 内圈半径
+  \def\Rtxt{2.02}    % 环绕文字所在半径
+  \def\Rstar{0.80}   % 五角星外接圆半径
+  \def\Astart{180}   % 首字角度（左上方）
+  \def\Aend{40}      % 末字角度（右上方）
+  \def\nchar{7}      % 文字个数
+  % ============================================
+
+  % ---------- 边框 ----------
+  \draw[sealred, line width=3pt]  (0,0) circle (\Rout);
+  \draw[sealred, line width=0.8pt](0,0) circle (\Rin);
+  % ---------- 五角星 ----------
+  \node[
+      star,
+      star points=5,
+      star point ratio=2.618,
+      fill=sealred,
+      draw=sealred,
+      minimum size=1.8cm
+  ] at (0,0) {};
+  % ---------- 环绕文字（逐字旋转） ----------
+  \foreach \ch [count=\i from 0]
+  in {全,国,中,学,生,物,理,竞,赛}{%
+      \pgfmathsetmacro\ang{\Astart - \i*(\Astart-\Aend)/(\nchar-1)}%
+      \node[sealred,
+          inner sep=0pt,
+          rotate=\ang-90,
+      font=\bfseries\fontsize{18}{18}\selectfont]
+      at (\ang:\Rtxt) {\ch};%
+  }
+  % ---------- 下方横向文字 ----------
+  \draw (0, -0.5*\Rin) node [anchor=north] {\color{sealred}\bf\fontsize{17}{17}精品资料};
+  % ===== 裁剪到印章外轮廓内 =====
+  \clip (0,0) circle (2.6);
+  % --- 第 1 层：细密小颗粒（仍然用小圆，因为颗粒本身接近圆形） ---
+  \foreach \i in {1,...,1500} {
+      \pgfmathsetmacro{\a}{360*rnd}
+      \pgfmathsetmacro{\r}{2.6*sqrt(rnd)}
+      \pgfmathsetmacro{\px}{\r*cos(\a)}
+      \pgfmathsetmacro{\py}{\r*sin(\a)}
+      \pgfmathsetmacro{\pr}{0.002 + 0.008*rnd*rnd}
+      \fill[white] (\px,\py) circle (\pr);
+  }
+  % --- 第 2 层：中等不规则白斑 ---
+  \foreach \i in {1,...,220} {
+      \pgfmathsetmacro{\a}{360*rnd}
+      \pgfmathsetmacro{\r}{2.6*sqrt(rnd)}
+      \pgfmathsetmacro{\px}{\r*cos(\a)}
+      \pgfmathsetmacro{\py}{\r*sin(\a)}
+      \randblob{\px}{\py}{0.02}{5}
+  }
+  % --- 第 3 层：大块不规则磨损，偏向外圈 ---
+  \foreach \i in {1,...,30} {
+      \pgfmathsetmacro{\a}{360*rnd}
+      \pgfmathsetmacro{\r}{2.6*(0.6+0.4*rnd)}
+      \pgfmathsetmacro{\px}{\r*cos(\a)}
+      \pgfmathsetmacro{\py}{\r*sin(\a)}
+      \randblob{\px}{\py}{0.06}{6}
+  }
+\end{tikzpicture}
+
+\end{document}
