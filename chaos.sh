@@ -3,7 +3,7 @@
 # Program  : chaos.sh
 # Author   : fengzhenhua
 # Email    : fengzhenhua@outlook.com
-# Date     : 2026-11-02 20:22
+# Date     : 2026-11-03 15:12
 # CopyRight: Copyright (C) 2022-2026 Zhen-Hua Feng(冯振华)
 # License  : Distributed under terms of the MIT license.
 # 功能：一键创建结构化 LaTeX 项目，智能管理章节与资源
@@ -31,7 +31,7 @@ done
 # 保存脚本变量
 CH_ARGS=( "$0" "$@" )
 # 变量配置
-CH_VERSION="${CH_ARGS[0]##*/}-V2.1"
+CH_VERSION="${CH_ARGS[0]##*/}-V2.2"
 CH_SOURCE="$HOME/.chaos"
 CH_CFG="$HOME/.chaos_info.sh"
 CH_PATH="$PWD"
@@ -71,9 +71,9 @@ fi
 CH_DATE_EN=$(date +"%Y-%m-%d")
 CH_DATE_ZH=$(date +"%Y年%m月%d日")
 # 读取模板, 直接使用目录变量名外加圆括号就行
-CH_FILES=($CH_SOURCE/*/)
-CH_FILES=("${CH_FILES[@]#$CH_SOURCE/}") # 去掉路径最左侧的完整路径
-CH_FILES=("${CH_FILES[@]%/}") #去掉路径最右边的/
+CH_FILES=( "$CH_SOURCE"/*/ )
+CH_FILES=( "${CH_FILES[@]#$CH_SOURCE/}" ) # 去掉路径最左侧的完整路径
+CH_FILES=( "${CH_FILES[@]%/}" ) #去掉路径最右边的/
 # 替换关键字
 CH_ADD_INFO(){
     sed -i "s/<+title+>/${CH_ARGS[1]}/" "$2"
